@@ -1,0 +1,76 @@
+{
+    "caregivers": [
+        {
+            "name": "Dr. Rajesh Kumar",
+            "email": "rajesh@example.com",
+            "password": "test123",
+            "phoneNumber": "9876543210"
+        },
+        {
+            "name": "Nurse Priya Shah",
+            "email": "priya@example.com",
+            "password": "test123",
+            "phoneNumber": "9123456789"
+        }
+    ],
+    "elders": [
+        {
+            "name": "Ramesh Sharma",
+            "phoneNumber": "9111111111",
+            "preferredLanguage": "hi",
+            "age": 75,
+            "address": "Mumbai, Maharashtra"
+        },
+        {
+            "name": "Sita Devi",
+            "phoneNumber": "9222222222",
+            "preferredLanguage": "mr",
+            "age": 68,
+            "address": "Pune, Maharashtra"
+        },
+        {
+            "name": "John D'Souza",
+            "phoneNumber": "9333333333",
+            "preferredLanguage": "en",
+            "age": 82,
+            "address": "Goa"
+        }
+    ],
+    "medications": [
+        {
+            "name": "Aspirin",
+            "dosage": "75mg",
+            "times": [
+                "08:00",
+                "20:00"
+            ],
+            "instructions": "Take after meals"
+        },
+        {
+            "name": "Metformin",
+            "dosage": "500mg",
+            "times": [
+                "08:00",
+                "14:00",
+                "20:00"
+            ],
+            "instructions": "Take with food"
+        },
+        {
+            "name": "Atorvastatin",
+            "dosage": "10mg",
+            "times": [
+                "21:00"
+            ],
+            "instructions": "Take before bed"
+        },
+        {
+            "name": "Lisinopril",
+            "dosage": "5mg",
+            "times": [
+                "09:00"
+            ],
+            "instructions": "Take on empty stomach"
+        }
+    ]
+}

@@ -1,0 +1,63 @@
+# Quick API Testing with REST Client (VS Code Extension)
+
+### Variables
+@baseUrl = http://localhost:5000/api
+@token = {{login.response.body.data.token}}
+@elderId = {{createElder.response.body.data._id}}
+@medicationId = {{createMedication.response.body.data._id}}
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Register
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test{{$randomInt}}@example.com",
+  "password": "test123",
+  "phoneNumber": "98{{$randomInt 10000000 99999999}}"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "rajesh@example.com",
+  "password": "test123"
+}
+
+### Create Elder
+# @name createElder
+POST {{baseUrl}}/elders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Test Elder {{$randomInt}}",
+  "phoneNumber": "91{{$randomInt 10000000 99999999}}",
+  "preferredLanguage": "hi",
+  "age": 75
+}
+
+### Create Medication
+# @name createMedication
+POST {{baseUrl}}/medications
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Test Med",
+  "dosage": "50mg",
+  "elderId": "{{elderId}}",
+  "times": ["{{$datetime iso8601 1 h}}"],
+  "startDate": "{{$datetime iso8601}}"
+}
+
+### Get Today's Reminders
+GET {{baseUrl}}/reminders/today
+Authorization: Bearer {{token}}
