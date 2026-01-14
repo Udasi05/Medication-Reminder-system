@@ -1,5 +1,5 @@
 // ============================================
-// FILE: src/pages/dashboard/Elders.jsx (ENHANCED)
+// FILE: src/pages/dashboard/Elders.jsx (MEDICAL MODERN)
 // ============================================
 import { useState, useEffect } from 'react';
 import { elderAPI } from '../../services/api';
@@ -82,16 +82,21 @@ const Elders = () => {
 
     return (
         <PageTransition>
-            <div>
-                {/* Header with animation */}
-                <div className="flex items-center justify-between mb-8 animate-slide-in-bottom">
+            <div className="space-y-8 pb-10">
+                {/* Header with Glass Effect */}
+                <div className="glass-panel p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-up">
                     <div>
-                        <h1 className="text-3xl font-bold gradient-text">Elder Management</h1>
-                        <p className="text-gray-600 mt-2">Manage elders and their medication schedules</p>
+                        <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                            <div className="p-2 bg-teal-100 rounded-xl">
+                                <Users className="w-6 h-6 text-teal-600" />
+                            </div>
+                            Elder Management
+                        </h1>
+                        <p className="text-slate-500 mt-1 ml-1 font-medium">Manage elders and their medication schedules</p>
                     </div>
                     <button
                         onClick={handleAddElder}
-                        className="btn-primary flex items-center space-x-2"
+                        className="btn-primary shadow-lg shadow-teal-500/20 flex items-center gap-2"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Add Elder</span>
@@ -100,9 +105,9 @@ const Elders = () => {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3 animate-fade-in">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start space-x-3 animate-fade-in-up">
                         <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                        <p className="text-red-700">{error}</p>
+                        <p className="text-red-700 font-medium">{error}</p>
                     </div>
                 )}
 
@@ -114,22 +119,23 @@ const Elders = () => {
                         ))}
                     </div>
                 ) : elders.length === 0 ? (
-                    /* Empty State */
-                    <EmptyState
-                        icon={Users}
-                        title="No Elders Yet"
-                        description="Start by adding your first elder to manage their medications"
-                        actionLabel="Add First Elder"
-                        onAction={handleAddElder}
-                    />
+                    <div className="glass-panel rounded-3xl p-12 text-center animate-fade-in-up">
+                        <EmptyState
+                            icon={Users}
+                            title="No Elders Yet"
+                            description="Start by adding your first elder to manage their medications"
+                            actionLabel="Add First Elder"
+                            onAction={handleAddElder}
+                        />
+                    </div>
                 ) : (
                     /* Elder Grid with stagger animation */
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {elders.map((elder, index) => (
                             <div
                                 key={elder._id}
-                                className="animate-fade-in"
-                                style={{ animationDelay: `${index * 0.1}s` }}
+                                className="animate-fade-in-up"
+                                style={{ animationDelay: `${index * 100}ms` }}
                             >
                                 <ElderCard
                                     elder={elder}

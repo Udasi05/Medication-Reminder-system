@@ -1,11 +1,11 @@
 // ============================================
-// FILE: src/pages/dashboard/Home.jsx (ENHANCED)
+// FILE: src/pages/dashboard/Home.jsx (MEDICAL MODERN)
 // ============================================
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { elderAPI, reminderAPI } from '../../services/api';
-import { Users, Pill, Bell, TrendingUp, Plus, ArrowRight, Calendar, CheckCircle } from 'lucide-react';
+import { Users, Pill, Bell, TrendingUp, Plus, ArrowRight, Calendar, CheckCircle, Clock } from 'lucide-react';
 
 const Home = () => {
     const { user } = useAuth();
@@ -49,21 +49,21 @@ const Home = () => {
         {
             icon: Users,
             label: 'Add Elder',
-            color: 'blue',
+            color: 'teal',
             path: '/dashboard/elders',
             description: 'Register a new elder'
         },
         {
             icon: Pill,
             label: 'Add Medication',
-            color: 'purple',
+            color: 'cyan',
             path: '/dashboard/medications',
             description: 'Schedule medications'
         },
         {
             icon: Bell,
             label: 'View Reminders',
-            color: 'green',
+            color: 'indigo',
             path: '/dashboard/reminders',
             description: 'Check today\'s reminders'
         }
@@ -74,25 +74,28 @@ const Home = () => {
             label: 'Total Elders',
             value: stats.totalElders,
             icon: Users,
-            color: 'blue',
-            bgColor: 'bg-blue-50',
-            textColor: 'text-blue-600'
+            color: 'teal',
+            bgColor: 'bg-teal-50',
+            textColor: 'text-teal-600',
+            gradient: 'from-teal-500 to-emerald-500'
         },
         {
             label: "Today's Reminders",
             value: stats.todayReminders,
             icon: Bell,
-            color: 'purple',
-            bgColor: 'bg-purple-50',
-            textColor: 'text-purple-600'
+            color: 'cyan',
+            bgColor: 'bg-cyan-50',
+            textColor: 'text-cyan-600',
+            gradient: 'from-cyan-500 to-blue-500'
         },
         {
             label: 'Adherence Rate',
             value: stats.adherenceRate,
             icon: TrendingUp,
-            color: 'green',
-            bgColor: 'bg-green-50',
-            textColor: 'text-green-600'
+            color: 'indigo',
+            bgColor: 'bg-indigo-50',
+            textColor: 'text-indigo-600',
+            gradient: 'from-indigo-500 to-purple-500'
         }
     ];
 
@@ -104,39 +107,44 @@ const Home = () => {
         });
     };
 
-    const getStatusColor = (status) => {
+    const getStatusStyles = (status) => {
         switch (status) {
-            case 'taken': return 'green';
-            case 'missed': return 'red';
-            default: return 'orange';
+            case 'taken': return { bg: 'bg-emerald-100', text: 'text-emerald-700', icon: 'text-emerald-600' };
+            case 'missed': return { bg: 'bg-red-100', text: 'text-red-700', icon: 'text-red-600' };
+            default: return { bg: 'bg-amber-100', text: 'text-amber-700', icon: 'text-amber-600' };
         }
     };
 
     return (
-        <div>
-            {/* Welcome Section */}
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                    Welcome back, {user?.name}! 👋
-                </h1>
-                <p className="text-gray-600 text-lg">
-                    Here's an overview of your medication management system
-                </p>
+        <div className="space-y-8 pb-10">
+            {/* Welcome Section with Glass Effect */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-teal-600 to-cyan-600 p-8 shadow-xl text-white animate-fade-in-up">
+                <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-teal-400/20 rounded-full blur-2xl"></div>
+
+                <div className="relative z-10">
+                    <h1 className="text-3xl font-bold mb-2">
+                        Welcome back, Dr. {user?.name?.split(' ')[0] || 'User'}! 👋
+                    </h1>
+                    <p className="text-teal-50 text-lg font-medium opacity-90 max-w-2xl">
+                        Here's your daily overview. You have <span className="font-bold text-white">{stats.todayReminders} reminders</span> scheduled for today.
+                    </p>
+                </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {statCards.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
-                        <div key={index} className="card hover:shadow-xl transition-all">
+                        <div key={index} className="glass-card rounded-2xl p-6 transition-all duration-300 hover:shadow-cyan-100/50 animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-600 mb-1 font-medium">{stat.label}</p>
-                                    <p className={`text-4xl font-bold ${stat.textColor}`}>{stat.value}</p>
+                                    <p className="text-sm text-slate-500 mb-1 font-bold uppercase tracking-wider">{stat.label}</p>
+                                    <p className={`text-4xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>{stat.value}</p>
                                 </div>
-                                <div className={`${stat.bgColor} p-4 rounded-xl`}>
-                                    <Icon className={`w-8 h-8 ${stat.textColor}`} />
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg shadow-gray-200`}>
+                                    <Icon className="w-6 h-6 text-white" />
                                 </div>
                             </div>
                         </div>
@@ -145,24 +153,30 @@ const Home = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="card mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                    <Plus className="w-6 h-6 mr-2 text-blue-600" />
+            <div className="glass-panel rounded-3xl p-8 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+                <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                    <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center mr-3">
+                        <Plus className="w-5 h-5 text-teal-600" />
+                    </div>
                     Quick Actions
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     {quickActions.map((action, index) => {
                         const Icon = action.icon;
                         return (
                             <button
                                 key={index}
                                 onClick={() => navigate(action.path)}
-                                className={`bg-gradient-to-br from-${action.color}-50 to-${action.color}-100 hover:from-${action.color}-100 hover:to-${action.color}-200 border border-${action.color}-200 p-6 rounded-xl transition-all group`}
+                                className={`relative overflow-hidden bg-white/50 border border-slate-200 hover:border-${action.color}-300 p-6 rounded-2xl transition-all duration-300 group hover:-translate-y-1 hover:shadow-md text-left`}
                             >
-                                <Icon className={`w-8 h-8 text-${action.color}-600 mb-3`} />
-                                <h3 className="font-bold text-gray-800 mb-1">{action.label}</h3>
-                                <p className="text-sm text-gray-600">{action.description}</p>
-                                <ArrowRight className={`w-5 h-5 text-${action.color}-600 mt-2 group-hover:translate-x-1 transition-transform`} />
+                                <div className={`w-10 h-10 rounded-full bg-${action.color}-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                                    <Icon className={`w-5 h-5 text-${action.color}-600`} />
+                                </div>
+                                <h3 className="font-bold text-slate-800 mb-1">{action.label}</h3>
+                                <p className="text-xs text-slate-500 font-medium">{action.description}</p>
+                                <div className={`absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0`}>
+                                    <ArrowRight className={`w-5 h-5 text-${action.color}-500`} />
+                                </div>
                             </button>
                         );
                     })}
@@ -170,63 +184,81 @@ const Home = () => {
             </div>
 
             {/* Recent Reminders */}
-            <div className="card">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                        <Calendar className="w-6 h-6 mr-2 text-purple-600" />
+            <div className="glass-panel rounded-3xl p-8 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-xl font-bold text-slate-800 flex items-center">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center mr-3">
+                            <Clock className="w-5 h-5 text-indigo-600" />
+                        </div>
                         Recent Reminders
                     </h2>
                     <button
                         onClick={() => navigate('/dashboard/reminders')}
-                        className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1"
+                        className="text-teal-600 hover:text-teal-700 hover:bg-teal-50 px-4 py-2 rounded-xl font-bold text-sm flex items-center transition-colors"
                     >
                         <span>View All</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <ArrowRight className="w-4 h-4 ml-1" />
                     </button>
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-8 text-gray-500">Loading...</div>
+                    <div className="flex justify-center py-12">
+                        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
                 ) : recentReminders.length === 0 ? (
-                    <div className="text-center py-12">
-                        <Bell className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">No Reminders Yet</h3>
-                        <p className="text-gray-600 mb-4">
-                            Add elders and medications to start receiving reminders
+                    <div className="text-center py-12 bg-slate-50/50 rounded-2xl border border-slate-100 border-dashed">
+                        <Bell className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-bold text-slate-700 mb-2">No Reminders Yet</h3>
+                        <p className="text-slate-500 mb-6 font-medium max-w-sm mx-auto">
+                            Add elders and medications to start receiving reminders and tracking health.
                         </p>
                         <button
                             onClick={() => navigate('/dashboard/elders')}
-                            className="btn-primary inline-flex items-center space-x-2"
+                            className="btn-primary shadow-lg shadow-teal-500/30"
                         >
-                            <Plus className="w-5 h-5" />
-                            <span>Add Your First Elder</span>
+                            <span className="flex items-center gap-2">
+                                <Plus className="w-4 h-4" />
+                                Add Your First Elder
+                            </span>
                         </button>
                     </div>
                 ) : (
                     <div className="space-y-3">
-                        {recentReminders.map((reminder) => (
-                            <div
-                                key={reminder._id}
-                                className={`p-4 rounded-lg border-l-4 border-${getStatusColor(reminder.status)}-500 bg-gray-50 hover:bg-gray-100 transition`}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                        <CheckCircle className={`w-5 h-5 text-${getStatusColor(reminder.status)}-500`} />
+                        {recentReminders.map((reminder, idx) => {
+                            const styles = getStatusStyles(reminder.status);
+                            return (
+                                <div
+                                    key={reminder._id}
+                                    className="group flex items-center justify-between p-4 rounded-xl bg-white border border-slate-100 hover:border-teal-200 hover:shadow-md transition-all duration-300"
+                                    style={{ animationDelay: `${idx * 100}ms` }}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${styles.bg}`}>
+                                            <CheckCircle className={`w-5 h-5 ${styles.icon}`} />
+                                        </div>
                                         <div>
-                                            <p className="font-semibold text-gray-800">
-                                                {reminder.elderId?.name} - {reminder.medicationId?.name}
+                                            <p className="font-bold text-slate-800">
+                                                {reminder.medicationId?.name || 'Unknown Med'}
                                             </p>
-                                            <p className="text-sm text-gray-600">
-                                                {formatTime(reminder.scheduledTime)}
+                                            <p className="text-xs text-slate-500 font-medium">
+                                                For: <span className="text-teal-600 font-bold">{reminder.elderId?.name || 'Unknown'}</span>
                                             </p>
                                         </div>
                                     </div>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-${getStatusColor(reminder.status)}-100 text-${getStatusColor(reminder.status)}-700`}>
-                                        {reminder.status}
-                                    </span>
+
+                                    <div className="text-right">
+                                        <p className="text-sm font-bold text-slate-700 font-mono bg-slate-100 px-2 py-1 rounded-md mb-1 inline-block">
+                                            {formatTime(reminder.scheduledTime)}
+                                        </p>
+                                        <div>
+                                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${styles.bg} ${styles.text}`}>
+                                                {reminder.status}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>

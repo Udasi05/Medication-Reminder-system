@@ -1,9 +1,10 @@
 // ============================================
-// FILE: src/pages/dashboard/Statistics.jsx
+// FILE: src/pages/dashboard/Statistics.jsx (MEDICAL MODERN)
 // ============================================
 import { useState, useEffect } from 'react';
 import { reminderAPI, elderAPI } from '../../services/api';
-import { BarChart3, TrendingUp, Award, Calendar, Loader, AlertCircle } from 'lucide-react';
+import { BarChart3, TrendingUp, Award, Calendar, Loader, AlertCircle, CheckCircle, XCircle, Clock, Users } from 'lucide-react';
+import PageTransition from '../../components/common/PageTransition';
 
 const Statistics = () => {
     const [stats, setStats] = useState(null);
@@ -34,228 +35,261 @@ const Statistics = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <Loader className="w-8 h-8 animate-spin text-blue-500" />
-                <span className="ml-3 text-gray-600">Loading statistics...</span>
+            <div className="flex items-center justify-center py-20">
+                <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                <span className="ml-3 text-slate-500 font-medium">Loading statistics...</span>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="card p-8">
-                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <p className="text-center text-red-700">{error}</p>
+            <div className="glass-panel p-8 text-center rounded-3xl animate-fade-in-up">
+                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
+                    <AlertCircle className="w-8 h-8 text-red-500" />
+                </div>
+                <p className="text-red-700 font-medium">{error}</p>
+                <button
+                    onClick={fetchData}
+                    className="mt-4 text-indigo-600 hover:text-indigo-800 font-semibold underline"
+                >
+                    Try Again
+                </button>
             </div>
         );
     }
 
     const adherenceRate = stats ? parseFloat(stats.adherenceRate) : 0;
-    const getAdherenceColor = (rate) => {
-        if (rate >= 90) return 'green';
-        if (rate >= 70) return 'yellow';
-        return 'red';
+    const getAdherenceConfig = (rate) => {
+        if (rate >= 90) return { color: 'emerald', label: 'Excellent', gradient: 'from-emerald-500 to-teal-500' };
+        if (rate >= 70) return { color: 'amber', label: 'Good', gradient: 'from-amber-400 to-orange-500' };
+        return { color: 'red', label: 'Needs Attention', gradient: 'from-red-500 to-rose-600' };
     };
 
-    const adherenceColor = getAdherenceColor(adherenceRate);
+    const adherenceConfig = getAdherenceConfig(adherenceRate);
+    const adherenceColor = adherenceConfig.color;
 
     return (
-        <div>
-            {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center space-x-3 mb-2">
-                    <BarChart3 className="w-8 h-8 text-purple-600" />
-                    <h1 className="text-3xl font-bold text-gray-800">Statistics & Adherence</h1>
-                </div>
-                <p className="text-gray-600">Track medication adherence and overall performance</p>
-            </div>
-
-            {/* Main Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {/* Adherence Rate */}
-                <div className="card bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-purple-900">Adherence Rate</h3>
-                        <Award className="w-8 h-8 text-purple-600" />
-                    </div>
-                    <div className="text-center">
-                        <div className={`text-5xl font-bold text-${adherenceColor}-600 mb-2`}>
-                            {stats?.adherenceRate || '0%'}
+        <PageTransition>
+            <div className="space-y-8 pb-10">
+                {/* Header with Glass Effect */}
+                <div className="glass-panel p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-up">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-indigo-50 rounded-2xl">
+                            <BarChart3 className="w-8 h-8 text-indigo-600" />
                         </div>
-                        <p className="text-sm text-purple-700">{stats?.period || 'Last 7 days'}</p>
-                    </div>
-                    <div className="mt-4 bg-white bg-opacity-50 rounded-lg p-3">
-                        <div className="flex justify-between text-sm">
-                            <span className="text-purple-700">Target:</span>
-                            <span className="font-semibold text-purple-900">90%</span>
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-800">Statistics & Performance</h1>
+                            <p className="text-slate-500 font-medium mt-1">
+                                Track medication adherence and health metrics
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Total Reminders */}
-                <div className="card bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-blue-900">Total Reminders</h3>
-                        <Calendar className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <div className="text-center">
-                        <div className="text-5xl font-bold text-blue-600 mb-2">
-                            {stats?.totalReminders || 0}
-                        </div>
-                        <p className="text-sm text-blue-700">{stats?.period || 'Last 7 days'}</p>
-                    </div>
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                        <div className="bg-white bg-opacity-50 rounded-lg p-2 text-center">
-                            <div className="text-lg font-bold text-green-600">{stats?.takenReminders || 0}</div>
-                            <div className="text-xs text-blue-700">Taken</div>
-                        </div>
-                        <div className="bg-white bg-opacity-50 rounded-lg p-2 text-center">
-                            <div className="text-lg font-bold text-red-600">{stats?.missedReminders || 0}</div>
-                            <div className="text-xs text-blue-700">Missed</div>
-                        </div>
-                    </div>
-                </div>
+                {/* Main Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                    {/* Adherence Rate Card */}
+                    <div className="glass-card rounded-3xl p-6 relative overflow-hidden group hover:shadow-xl transition-all duration-300 border border-white/60">
+                        <div className={`absolute top-0 right-0 w-32 h-32 bg-${adherenceColor}-100/50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110`}></div>
 
-                {/* Active Elders */}
-                <div className="card bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-green-900">Active Elders</h3>
-                        <TrendingUp className="w-8 h-8 text-green-600" />
-                    </div>
-                    <div className="text-center">
-                        <div className="text-5xl font-bold text-green-600 mb-2">
-                            {elders.length}
+                        <div className="flex items-center justify-between mb-4 relative z-10">
+                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Adherence Rate</h3>
+                            <Award className={`w-6 h-6 text-${adherenceColor}-500`} />
                         </div>
-                        <p className="text-sm text-green-700">Currently managed</p>
-                    </div>
-                    <div className="mt-4 bg-white bg-opacity-50 rounded-lg p-3">
-                        <div className="text-center text-sm text-green-700">
-                            Total medications tracked
-                        </div>
-                        <div className="text-center text-2xl font-bold text-green-900 mt-1">
-                            {stats?.totalReminders ? Math.ceil(stats.totalReminders / 7) : 0}
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Detailed Breakdown */}
-            <div className="card mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Detailed Breakdown</h2>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="text-center">
-                        <div className="text-4xl font-bold text-blue-600 mb-2">
-                            {stats?.totalReminders || 0}
+                        <div className="relative z-10">
+                            <div className="flex items-baseline gap-2">
+                                <span className={`text-5xl font-extrabold bg-gradient-to-br ${adherenceConfig.gradient} bg-clip-text text-transparent`}>
+                                    {stats?.adherenceRate || '0%'}
+                                </span>
+                            </div>
+                            <p className="text-slate-400 text-xs font-semibold mt-2 uppercase tracking-wide">
+                                {stats?.period || 'Last 7 days'}
+                            </p>
                         </div>
-                        <p className="text-gray-600">Total Reminders</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="text-4xl font-bold text-green-600 mb-2">
-                            {stats?.takenReminders || 0}
-                        </div>
-                        <p className="text-gray-600">Successfully Taken</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="text-4xl font-bold text-red-600 mb-2">
-                            {stats?.missedReminders || 0}
-                        </div>
-                        <p className="text-gray-600">Missed Doses</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="text-4xl font-bold text-orange-600 mb-2">
-                            {stats?.pendingReminders || 0}
-                        </div>
-                        <p className="text-gray-600">Pending</p>
-                    </div>
-                </div>
-            </div>
 
-            {/* Visual Progress Bar */}
-            <div className="card mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Adherence Progress</h2>
-                <div className="space-y-4">
-                    <div>
-                        <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-600">Current Rate</span>
-                            <span className="font-semibold text-gray-800">{stats?.adherenceRate || '0%'}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-6">
-                            <div
-                                className={`bg-gradient-to-r from-${adherenceColor}-400 to-${adherenceColor}-600 h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
-                                style={{ width: stats?.adherenceRate || '0%' }}
-                            >
-                                <span className="text-white text-xs font-bold">{stats?.adherenceRate || '0%'}</span>
+                        <div className="mt-6">
+                            <div className="flex justify-between text-xs font-bold mb-1.5">
+                                <span className={`text-${adherenceColor}-600`}>{adherenceConfig.label}</span>
+                                <span className="text-slate-400">Target: 90%</span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div
+                                    className={`bg-gradient-to-r ${adherenceConfig.gradient} h-full rounded-full transition-all duration-1000 ease-out`}
+                                    style={{ width: stats?.adherenceRate || '0%' }}
+                                ></div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Target Line */}
-                    <div className="relative pt-4">
-                        <div className="flex justify-between text-xs text-gray-500">
-                            <span>0%</span>
-                            <span>25%</span>
-                            <span>50%</span>
-                            <span>75%</span>
-                            <span className="text-green-600 font-bold">90% Target</span>
-                            <span>100%</span>
+                    {/* Total Reminders Card */}
+                    <div className="glass-card rounded-3xl p-6 relative overflow-hidden group hover:shadow-xl transition-all duration-300 border border-white/60">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+
+                        <div className="flex items-center justify-between mb-4 relative z-10">
+                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Reminders</h3>
+                            <Calendar className="w-6 h-6 text-blue-500" />
+                        </div>
+
+                        <div className="relative z-10">
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-5xl font-extrabold text-blue-600">
+                                    {stats?.totalReminders || 0}
+                                </span>
+                            </div>
+                            <p className="text-slate-400 text-xs font-semibold mt-2 uppercase tracking-wide">
+                                {stats?.period || 'Last 7 days'}
+                            </p>
+                        </div>
+
+                        <div className="mt-6 grid grid-cols-2 gap-3">
+                            <div className="bg-emerald-50 rounded-xl p-2.5 text-center border border-emerald-100">
+                                <div className="text-lg font-bold text-emerald-600">{stats?.takenReminders || 0}</div>
+                                <div className="text-[10px] font-bold text-emerald-700/60 uppercase tracking-wider">Taken</div>
+                            </div>
+                            <div className="bg-red-50 rounded-xl p-2.5 text-center border border-red-100">
+                                <div className="text-lg font-bold text-red-600">{stats?.missedReminders || 0}</div>
+                                <div className="text-[10px] font-bold text-red-700/60 uppercase tracking-wider">Missed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Active Elders Card */}
+                    <div className="glass-card rounded-3xl p-6 relative overflow-hidden group hover:shadow-xl transition-all duration-300 border border-white/60">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-teal-100/50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+
+                        <div className="flex items-center justify-between mb-4 relative z-10">
+                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Active Elders</h3>
+                            <Users className="w-6 h-6 text-teal-600" />
+                        </div>
+
+                        <div className="relative z-10">
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-5xl font-extrabold text-teal-600">
+                                    {elders.length}
+                                </span>
+                            </div>
+                            <p className="text-slate-400 text-xs font-semibold mt-2 uppercase tracking-wide">
+                                Currently Managed
+                            </p>
+                        </div>
+
+                        <div className="mt-6 bg-slate-50 rounded-xl p-3 border border-slate-100 flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Avg Meds/Week</span>
+                            <span className="text-lg font-bold text-slate-800">
+                                {stats?.totalReminders ? Math.ceil(stats.totalReminders / 7) : 0}
+                            </span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Elder List with Stats */}
-            <div className="card">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Elder Overview</h2>
-                {elders.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                        No elders added yet. Add elders to see their statistics.
-                    </div>
-                ) : (
-                    <div className="space-y-3">
-                        {elders.map((elder) => (
-                            <div
-                                key={elder._id}
-                                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
-                            >
-                                <div className="flex items-center space-x-4">
-                                    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold text-lg">
-                                        {elder.name.charAt(0)}
+                {/* Content Split: Detailed Stats & Overview */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+
+                    {/* Detailed Breakdown */}
+                    <div className="glass-panel p-8 rounded-3xl">
+                        <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-indigo-500" />
+                            Status Breakdown
+                        </h2>
+
+                        <div className="space-y-5">
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <Calendar className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-800">{elder.name}</h3>
-                                        <p className="text-sm text-gray-600">{elder.phoneNumber}</p>
+                                        <p className="text-sm font-bold text-slate-700">Total Reminders</p>
+                                        <p className="text-xs text-slate-400 font-medium">Scheduled doses</p>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-sm text-gray-500">Language</div>
-                                    <div className="font-semibold text-gray-800">{elder.preferredLanguage.toUpperCase()}</div>
-                                </div>
+                                <span className="text-2xl font-bold text-slate-800">{stats?.totalReminders || 0}</span>
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
 
-            {/* Performance Indicators */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <div className={`card border-l-4 border-${adherenceColor}-500`}>
-                    <h3 className="font-semibold text-gray-800 mb-2">Performance</h3>
-                    <p className={`text-2xl font-bold text-${adherenceColor}-600`}>
-                        {adherenceRate >= 90 ? 'Excellent' : adherenceRate >= 70 ? 'Good' : 'Needs Attention'}
-                    </p>
-                </div>
-                <div className="card border-l-4 border-blue-500">
-                    <h3 className="font-semibold text-gray-800 mb-2">Consistency</h3>
-                    <p className="text-2xl font-bold text-blue-600">
-                        {stats?.takenReminders || 0}/{stats?.totalReminders || 0}
-                    </p>
-                </div>
-                <div className="card border-l-4 border-purple-500">
-                    <h3 className="font-semibold text-gray-800 mb-2">Period</h3>
-                    <p className="text-2xl font-bold text-purple-600">{stats?.period || 'Last 7 days'}</p>
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 hover:border-emerald-200 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                        <CheckCircle className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-700">Successfully Taken</p>
+                                        <p className="text-xs text-slate-400 font-medium">Confirmed doses</p>
+                                    </div>
+                                </div>
+                                <span className="text-2xl font-bold text-emerald-600">{stats?.takenReminders || 0}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-red-50/50 border border-red-100 hover:border-red-200 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600">
+                                        <XCircle className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-700">Missed Doses</p>
+                                        <p className="text-xs text-slate-400 font-medium">Requires follow-up</p>
+                                    </div>
+                                </div>
+                                <span className="text-2xl font-bold text-red-600">{stats?.missedReminders || 0}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-amber-50/50 border border-amber-100 hover:border-amber-200 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                                        <Clock className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-700">Pending Status</p>
+                                        <p className="text-xs text-slate-400 font-medium">Awaiting action</p>
+                                    </div>
+                                </div>
+                                <span className="text-2xl font-bold text-amber-600">{stats?.pendingReminders || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Elder Overview List */}
+                    <div className="glass-panel p-8 rounded-3xl">
+                        <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                            <Users className="w-5 h-5 text-teal-500" />
+                            Elder Overview
+                        </h2>
+
+                        {elders.length === 0 ? (
+                            <div className="text-center py-12 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                                <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                                <p className="text-slate-500 font-medium">No elders added yet.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3 h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                                {elders.map((elder) => (
+                                    <div
+                                        key={elder._id}
+                                        className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100 hover:border-teal-200 hover:shadow-sm transition-all"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-teal-200/50">
+                                                {elder.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-800 text-sm">{elder.name}</h3>
+                                                <p className="text-xs text-slate-500 font-medium">{elder.phoneNumber}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="inline-block px-2 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-600 uppercase tracking-wide">
+                                                {elder.preferredLanguage}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </PageTransition>
     );
 };
 
