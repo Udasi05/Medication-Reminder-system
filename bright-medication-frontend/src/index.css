@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* =======================
-   CSS VARIABLES (THEME)
-   ======================= */
 :root {
   /* Medical Modern Palette */
   --background: 210 40% 98%;
@@ -38,9 +35,7 @@
   --radius: 1rem;
 }
 
-/* =======================
-   BASE STYLES
-   ======================= */
+
 @layer base {
   * {
     @apply border-border;
@@ -51,9 +46,7 @@
   }
 }
 
-/* =======================
-   UTILITIES
-   ======================= */
+
 @layer utilities {
   .glass-panel {
     @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl;
@@ -77,9 +70,7 @@
   }
 }
 
-/* =======================
-   COMPONENTS
-   ======================= */
+
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-teal-600 text-white hover:bg-teal-700 shadow-teal hover:shadow-teal-lg h-11 px-8;
@@ -102,9 +93,8 @@
   }
 }
 
-/* =======================
-   ANIMATIONS
-   ======================= */
+
+
 @keyframes float-gentle {
 
   0%,
